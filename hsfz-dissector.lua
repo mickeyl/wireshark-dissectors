@@ -1,4 +1,4 @@
--- HSFZ protocol framer. (C) Dr. Michael 'Mickey' Lauer <mlauer@vanille-media.de>
+-- HSFZ TCP protocol framer. (C) Dr. Michael 'Mickey' Lauer <mlauer@vanille-media.de>
 
 hsfz_protocol = Proto("HSFZ",  "BMW High-Speed-Fahrzeug-Zugang (High Speed Vehicle Access)")
 
@@ -19,8 +19,9 @@ function get_message_type(type)
 
         if type == 0x0001 then name = "MESSAGE"
     elseif type == 0x0002 then name = "ECHO"
+    elseif type == 0x0040 then name = "INVALID ADDRESS"
     elseif type == 0x0041 then name = "PROTOCOL VIOLATION"
-     end
+       end
 
     return name
   end
@@ -39,6 +40,8 @@ function hsfz_protocol.dissector(buffer, pinfo, tree)
   subtree:add(message_type, buffer(4,2)):append_text(" (" .. mtypename .. ")")
   subtree:add(source_address, buffer(6,1))
   subtree:add(dest_address, buffer(7,1))
+
+  if length < 9 then return end
 
   uds_dissector = Dissector.get("uds")
   uds_dissector:call(buffer(8):tvb(), pinfo, tree)
