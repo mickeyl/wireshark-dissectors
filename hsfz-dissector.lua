@@ -41,10 +41,10 @@ function hsfz_protocol.dissector(buffer, pinfo, tree)
   subtree:add(source_address, buffer(6,1))
   subtree:add(dest_address, buffer(7,1))
 
-  if length < 9 then return end
-
-  uds_dissector = Dissector.get("uds")
-  uds_dissector:call(buffer(8):tvb(), pinfo, tree)
+  if mtype == 1 then
+    uds_dissector = Dissector.get("uds")
+    uds_dissector:call(buffer(8):tvb(), pinfo, tree)
+  end
 
 end
 
